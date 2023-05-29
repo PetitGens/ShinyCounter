@@ -5,11 +5,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -22,10 +24,10 @@ public class Controller implements Initializable {
 
     @FXML private ToggleButton multipleMode;
 
-    private ArrayList<Counter> countersList;
+    private Configuration configuration;
 
-    private Background selectedBackground = new Background(new BackgroundFill(Color.valueOf("0xfafa39"), CornerRadii.EMPTY, Insets.EMPTY));
-    private Background unselectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
+    private static final Background selectedBackground = new Background(new BackgroundFill(Color.valueOf("0xfafa39"), CornerRadii.EMPTY, Insets.EMPTY));
+    private static final Background unselectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
 
     Border defaultBorder = new Border(new BorderStroke(Color.BLACK,
             BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT));
@@ -36,16 +38,33 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        countersList = new ArrayList<Counter>();
+        configuration = new Configuration("counters.txt");
         gridInit();
+
+        counterMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(singleMode)){
+                for (Counter currentCounter : configuration.getCounters()){
+                    currentCounter.unselect();
+                }
+            }
+        });
 
         Counter test = new Counter("Test Counter");
         addCounter(test);
+        test.setIncrementHotKey(KeyCode.ADD);
+        test.setDecrementHotKey(KeyCode.SUBTRACT);
+        test.setFileName("testCounter.txt");
+        try {
+            test.load();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         //test.select();
 
         Counter test2 = new Counter("Test Counter 2");
-        addCounter(test);
-
+        addCounter(test2);
+        test2.setIncrementHotKey(KeyCode.ADD);
+        test2.setDecrementHotKey(KeyCode.SUBTRACT);
         singleMode.setSelected(true);
     }
 
@@ -72,9 +91,9 @@ public class Controller implements Initializable {
     }
 
     public void addCounter(Counter counter){
-        int rowIndex = countersList.size();
+        int rowIndex = configuration.getCountersNumber();
 
-        countersList.add(counter);
+        configuration.addCounter(counter);
         countersGrid.getRowConstraints().add(new RowConstraints(50));
 
         Label counterNameField = new Label();
@@ -115,5 +134,47 @@ public class Controller implements Initializable {
                 buttonsHBox.setBackground(unselectedBackground);
             }
         });
+
+        namePane.setOnMouseClicked(event -> onClickedRow(rowIndex));
+        countPane.setOnMouseClicked(event -> onClickedRow(rowIndex));
+        buttonsHBox.setOnMouseClicked(event -> onClickedRow(rowIndex));
+    }
+
+    public void onClickedRow(int rowIndex){
+        Counter clickedCounter = configuration.getCounter(rowIndex);
+        if(counterMode.getSelectedToggle().equals(singleMode)){
+            if (clickedCounter.isSelected()){
+                return;
+            }
+
+            for (Counter counter : configuration.getCounters()){
+                counter.unselect();
+            }
+
+            clickedCounter.select();
+        }
+        else{
+            if(clickedCounter.isSelected()){
+                clickedCounter.unselect();
+            }
+            else {
+                clickedCounter.select();
+            }
+        }
+    }
+
+    public void onKeyPressed(KeyEvent keyEvent){
+        KeyCode pressedKey = keyEvent.getCode();
+
+        for (Counter currentCounter : configuration.getCounters()){
+            if(currentCounter.isSelected()){
+                if(currentCounter.getIncrementHotKey() == pressedKey){
+                    currentCounter.increment();
+                }
+                else if(currentCounter.getDecrementHotKey() == pressedKey){
+                    currentCounter.decrement();
+                }
+            }
+        }
     }
 }
