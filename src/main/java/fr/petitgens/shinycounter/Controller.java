@@ -5,6 +5,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
@@ -38,13 +40,6 @@ public class Controller implements Initializable {
         configuration = new Configuration("counters.txt");
         gridInit();
 
-        Counter test = new Counter("Test Counter");
-        addCounter(test);
-        //test.select();
-
-        Counter test2 = new Counter("Test Counter 2");
-        addCounter(test2);
-
         counterMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals(singleMode)){
                 for (Counter currentCounter : configuration.getCounters()){
@@ -53,6 +48,16 @@ public class Controller implements Initializable {
             }
         });
 
+        Counter test = new Counter("Test Counter");
+        addCounter(test);
+        test.setIncrementHotKey(KeyCode.ADD);
+        test.setDecrementHotKey(KeyCode.SUBTRACT);
+        //test.select();
+
+        Counter test2 = new Counter("Test Counter 2");
+        addCounter(test2);
+        test2.setIncrementHotKey(KeyCode.ADD);
+        test2.setDecrementHotKey(KeyCode.SUBTRACT);
         singleMode.setSelected(true);
     }
 
@@ -147,6 +152,21 @@ public class Controller implements Initializable {
             }
             else {
                 clickedCounter.select();
+            }
+        }
+    }
+
+    public void onKeyPressed(KeyEvent keyEvent){
+        KeyCode pressedKey = keyEvent.getCode();
+
+        for (Counter currentCounter : configuration.getCounters()){
+            if(currentCounter.isSelected()){
+                if(currentCounter.getIncrementHotKey() == pressedKey){
+                    currentCounter.increment();
+                }
+                else if(currentCounter.getDecrementHotKey() == pressedKey){
+                    currentCounter.decrement();
+                }
             }
         }
     }

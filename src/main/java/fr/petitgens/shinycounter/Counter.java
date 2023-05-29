@@ -1,19 +1,22 @@
 package fr.petitgens.shinycounter;
 
 import javafx.beans.property.*;
-
-import java.net.URL;
+import javafx.scene.input.KeyCode;
 
 public class Counter {
-    private SimpleIntegerProperty count;
+    private final SimpleIntegerProperty count;
 
-    private SimpleIntegerProperty increment;
+    private final SimpleIntegerProperty increment;
 
-    private URL file;
+    private String file;
 
-    private SimpleStringProperty name;
+    private final SimpleStringProperty name;
 
-    private SimpleBooleanProperty selected;
+    private final SimpleBooleanProperty selected;
+
+    private KeyCode incrementHotKey;
+
+    private KeyCode decrementHotKey;
 
     public Counter(String name){
         count = new SimpleIntegerProperty(0);
@@ -82,10 +85,40 @@ public class Counter {
     }
 
     public void add(int value){
-        count.add(value);
+        count.set(count.get() + value);
+
+        if(count.get() < 0){
+            count.set(0);
+        }
     }
 
     public void increment(){
-        count.add(increment);
+        add(increment.get());
+    }
+
+    public void decrement(){
+        add(- increment.get());
+    }
+
+    public void setIncrementHotKey(KeyCode hotKey){
+        if(decrementHotKey == hotKey){
+            decrementHotKey = null;
+        }
+        incrementHotKey = hotKey;
+    }
+
+    public KeyCode getIncrementHotKey(){
+        return incrementHotKey;
+    }
+
+    public void setDecrementHotKey(KeyCode hotKey){
+        if(incrementHotKey == hotKey){
+            incrementHotKey = null;
+        }
+        decrementHotKey = hotKey;
+    }
+
+    public KeyCode getDecrementHotKey(){
+        return decrementHotKey;
     }
 }
