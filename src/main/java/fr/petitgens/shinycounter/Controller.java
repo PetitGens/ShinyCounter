@@ -10,6 +10,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -52,6 +53,12 @@ public class Controller implements Initializable {
         addCounter(test);
         test.setIncrementHotKey(KeyCode.ADD);
         test.setDecrementHotKey(KeyCode.SUBTRACT);
+        test.setFileName("testCounter.txt");
+        try {
+            test.load();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         //test.select();
 
         Counter test2 = new Counter("Test Counter 2");
