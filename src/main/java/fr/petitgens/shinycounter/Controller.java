@@ -22,7 +22,7 @@ public class Controller implements Initializable {
 
     @FXML private ToggleButton multipleMode;
 
-    private ArrayList<Counter> countersList;
+    private Configuration configuration;
 
     private Background selectedBackground = new Background(new BackgroundFill(Color.valueOf("0xfafa39"), CornerRadii.EMPTY, Insets.EMPTY));
     private Background unselectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
@@ -36,7 +36,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        countersList = new ArrayList<Counter>();
+        configuration = new Configuration("counters.txt");
         gridInit();
 
         Counter test = new Counter("Test Counter");
@@ -44,7 +44,7 @@ public class Controller implements Initializable {
         //test.select();
 
         Counter test2 = new Counter("Test Counter 2");
-        addCounter(test);
+        addCounter(test2);
 
         singleMode.setSelected(true);
     }
@@ -72,9 +72,9 @@ public class Controller implements Initializable {
     }
 
     public void addCounter(Counter counter){
-        int rowIndex = countersList.size();
+        int rowIndex = configuration.getCountersNumber();
 
-        countersList.add(counter);
+        configuration.addCounter(counter);
         countersGrid.getRowConstraints().add(new RowConstraints(50));
 
         Label counterNameField = new Label();
@@ -115,5 +115,34 @@ public class Controller implements Initializable {
                 buttonsHBox.setBackground(unselectedBackground);
             }
         });
+
+        namePane.setOnMouseClicked(event -> {
+            onClickedRow(rowIndex);
+        });
+        countPane.setOnMouseClicked(event -> {
+            onClickedRow(rowIndex);
+        });
+        buttonsHBox.setOnMouseClicked(event -> {
+            onClickedRow(rowIndex);
+        });
+    }
+
+    public void onClickedRow(int rowIndex){
+        Counter clickedCounter = configuration.getCounter(rowIndex);
+        if(counterMode.getSelectedToggle() == singleMode){
+            if (clickedCounter.isSelected()){
+                return;
+            }
+
+            for (Counter counter : configuration.getCounters()){
+                counter.unselect();
+            }
+
+            clickedCounter.select();
+            System.out.println("");
+        }
+        else{
+
+        }
     }
 }
