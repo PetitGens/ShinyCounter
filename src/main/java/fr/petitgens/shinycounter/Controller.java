@@ -46,6 +46,14 @@ public class Controller implements Initializable {
         Counter test2 = new Counter("Test Counter 2");
         addCounter(test2);
 
+        counterMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals(singleMode)){
+                for (Counter currentCounter : configuration.getCounters()){
+                    currentCounter.unselect();
+                }
+            }
+        });
+
         singleMode.setSelected(true);
     }
 
@@ -129,7 +137,7 @@ public class Controller implements Initializable {
 
     public void onClickedRow(int rowIndex){
         Counter clickedCounter = configuration.getCounter(rowIndex);
-        if(counterMode.getSelectedToggle() == singleMode){
+        if(counterMode.getSelectedToggle().equals(singleMode)){
             if (clickedCounter.isSelected()){
                 return;
             }
@@ -142,7 +150,12 @@ public class Controller implements Initializable {
             System.out.println("");
         }
         else{
-
+            if(clickedCounter.isSelected()){
+                clickedCounter.unselect();
+            }
+            else {
+                clickedCounter.select();
+            }
         }
     }
 }
