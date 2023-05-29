@@ -9,7 +9,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -24,8 +23,8 @@ public class Controller implements Initializable {
 
     private Configuration configuration;
 
-    private Background selectedBackground = new Background(new BackgroundFill(Color.valueOf("0xfafa39"), CornerRadii.EMPTY, Insets.EMPTY));
-    private Background unselectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
+    private static final Background selectedBackground = new Background(new BackgroundFill(Color.valueOf("0xfafa39"), CornerRadii.EMPTY, Insets.EMPTY));
+    private static final Background unselectedBackground = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
 
     Border defaultBorder = new Border(new BorderStroke(Color.BLACK,
             BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT));
@@ -124,15 +123,9 @@ public class Controller implements Initializable {
             }
         });
 
-        namePane.setOnMouseClicked(event -> {
-            onClickedRow(rowIndex);
-        });
-        countPane.setOnMouseClicked(event -> {
-            onClickedRow(rowIndex);
-        });
-        buttonsHBox.setOnMouseClicked(event -> {
-            onClickedRow(rowIndex);
-        });
+        namePane.setOnMouseClicked(event -> onClickedRow(rowIndex));
+        countPane.setOnMouseClicked(event -> onClickedRow(rowIndex));
+        buttonsHBox.setOnMouseClicked(event -> onClickedRow(rowIndex));
     }
 
     public void onClickedRow(int rowIndex){
@@ -147,7 +140,6 @@ public class Controller implements Initializable {
             }
 
             clickedCounter.select();
-            System.out.println("");
         }
         else{
             if(clickedCounter.isSelected()){
